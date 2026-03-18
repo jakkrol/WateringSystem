@@ -1,4 +1,10 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+
+#define BME280_ADDRESS 0x76
+Adafruit_BME280 bme;
 
 const int MOSFET_PIN = 3; 
 const int SENSOR_PIN = A0;
@@ -11,14 +17,22 @@ const int WET_THRESHOLD = 600;
 
 
 void setup() {
-   Serial.begin(9600);
-  pinMode(MOSFET_PIN, OUTPUT);
-  digitalWrite(MOSFET_PIN, LOW); 
+Serial.begin(9600);
+  while(!Serial);
 
-  pinMode(HCR_trig, OUTPUT);
-  pinMode(HCR_echo, INPUT);
+  if (!bme.begin(BME280_ADDRESS )) {
+    Serial.println("Can't find BME280!");
+    while(1) delay(10);
+  }
 
-  Serial.println("System nawadniania uruchomiony.");
+
+  // pinMode(MOSFET_PIN, OUTPUT);
+  // digitalWrite(MOSFET_PIN, LOW); 
+
+  // pinMode(HCR_trig, OUTPUT);
+  // pinMode(HCR_echo, INPUT);
+
+  // Serial.println("System nawadniania uruchomiony.");
 }
 
 void loop() {
@@ -41,24 +55,36 @@ void loop() {
 
 
   ////////////////////HCR sensor logic////////////////////////////
-  digitalWrite(HCR_trig, LOW);
-  delayMicroseconds(2);
+  // digitalWrite(HCR_trig, LOW);
+  // delayMicroseconds(2);
   
-  // Wysłanie impulsu 
-  digitalWrite(HCR_trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(HCR_trig, LOW);
+  // // Wysłanie impulsu 
+  // digitalWrite(HCR_trig, HIGH);
+  // delayMicroseconds(10);
+  // digitalWrite(HCR_trig, LOW);
   
-  // Odczyt 
-  long duration = pulseIn(HCR_echo, HIGH);
+  // // Odczyt 
+  // long duration = pulseIn(HCR_echo, HIGH);
   
-  // Przeliczenie na cm 
-  int distance = duration * 0.034 / 2;
+  // // Przeliczenie na cm 
+  // int distance = duration * 0.034 / 2;
 
-  Serial.print("Dystans: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+  // Serial.print("Dystans: ");
+  // Serial.print(distance);
+  // Serial.println(" cm");
 
-  delay(500);
+  // delay(500);
   /////////////////////////////////////////////////////////////////
+  ////////////////////BME280///////////////////////////////////////
+  Serial.print("Temperature in degC = ");
+  Serial.println(bme.readTemperature());
+
+  Serial.print("Pressure in hPa     = ");
+  Serial.println(bme.readPressure() / 100.0F);
+
+  Serial.print("Humidity in %RH     = ");
+  Serial.println(bme.readHumidity());
+
+  Serial.println();
+  delay(5000);
 }
