@@ -9,82 +9,74 @@ Adafruit_BME280 bme;
 const int MOSFET_PIN = 3; 
 const int SENSOR_PIN = A0;
 
-const int HCR_trig = 9;
-const int HCR_echo = 10;
+const int HCR_trig = 4; 
+const int HCR_echo = 5; 
 
 const int DRY_THRESHOLD = 700;  
 const int WET_THRESHOLD = 600;  
 
+const int WATER_MIN_DISTANCE = 20; 
 
 void setup() {
-Serial.begin(9600);
-  while(!Serial);
+  Serial.begin(9600);
 
-  if (!bme.begin(BME280_ADDRESS )) {
-    Serial.println("Can't find BME280!");
-    while(1) delay(10);
-  }
+  // BME280 
+  // if (!bme.begin(BME280_ADDRESS )) {
+  //   Serial.println("Can't find BME280!");
+  //   while(1) delay(10);
+  // }
 
+  pinMode(MOSFET_PIN, OUTPUT);
+  digitalWrite(MOSFET_PIN, LOW); 
 
-  // pinMode(MOSFET_PIN, OUTPUT);
-  // digitalWrite(MOSFET_PIN, LOW); 
+  pinMode(HCR_trig, OUTPUT);
+  pinMode(HCR_echo, INPUT);
 
-  // pinMode(HCR_trig, OUTPUT);
-  // pinMode(HCR_echo, INPUT);
-
-  // Serial.println("System nawadniania uruchomiony.");
+  Serial.println("System nawadniania: Test czujników i pompy.");
 }
 
 void loop() {
-  // int sensorValue = analogRead(SENSOR_PIN);
+  int sensorValue = analogRead(SENSOR_PIN);
+
+  digitalWrite(HCR_trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(HCR_trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(HCR_trig, LOW);
   
-  // Serial.print("Odczyt czujnika: ");
-  // Serial.println(sensorValue);
+  long duration = pulseIn(HCR_echo, HIGH, 30000); // Timeout 30ms
+  int distance = duration * 0.034 / 2;
 
-  // if (sensorValue > DRY_THRESHOLD) {
-  //   Serial.println(">>> Sucho! Otwieram zawór.");
-  //   digitalWrite(MOSFET_PIN, HIGH);
-  // } 
-  // else if (sensorValue < WET_THRESHOLD) {
-  //   Serial.println("--- Wilgotno. Zamykam zawór.");
-  //   digitalWrite(MOSFET_PIN, LOW);
-  // }
-
-  // delay(2000); 
+  Serial.print("Wilgotność gleby: ");
+  Serial.print(sensorValue);
+  Serial.print(" | Dystans: ");
+  Serial.print(distance);
+  Serial.println(" cm");
 
 
+  // --- (MOSFET) ---
+  if (sensorValue > DRY_THRESHOLD) {
+    // Is there water?
+    if (distance > 0 && distance < WATER_MIN_DISTANCE) {
+      Serial.println(">>> Sucho i jest woda. Otwieram zawór.");
+      digitalWrite(MOSFET_PIN, HIGH);
+    } else {
+      Serial.println("!!! Sucho, ale BRAK WODY (zabezpieczenie pompy).");
+      digitalWrite(MOSFET_PIN, LOW);
+    }
+  } 
+  else if (sensorValue < WET_THRESHOLD) {
+    Serial.println("--- Wilgotno. Zamykam zawór.");
+    digitalWrite(MOSFET_PIN, LOW);
+  }
 
-  ////////////////////HCR sensor logic////////////////////////////
-  // digitalWrite(HCR_trig, LOW);
-  // delayMicroseconds(2);
-  
-  // // Wysłanie impulsu 
-  // digitalWrite(HCR_trig, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(HCR_trig, LOW);
-  
-  // // Odczyt 
-  // long duration = pulseIn(HCR_echo, HIGH);
-  
-  // // Przeliczenie na cm 
-  // int distance = duration * 0.034 / 2;
 
-  // Serial.print("Dystans: ");
-  // Serial.print(distance);
-  // Serial.println(" cm");
+  // Serial.print("Temperature in degC = ");
+  // Serial.println(bme.readTemperature());
+  // Serial.print("Pressure in hPa     = ");
+  // Serial.println(bme.readPressure() / 100.0F);
+  // Serial.print("Humidity in %RH     = ");
+  // Serial.println(bme.readHumidity());
 
-  // delay(500);
-  /////////////////////////////////////////////////////////////////
-  ////////////////////BME280///////////////////////////////////////
-  Serial.print("Temperature in degC = ");
-  Serial.println(bme.readTemperature());
-
-  Serial.print("Pressure in hPa     = ");
-  Serial.println(bme.readPressure() / 100.0F);
-
-  Serial.print("Humidity in %RH     = ");
-  Serial.println(bme.readHumidity());
-
-  Serial.println();
-  delay(5000);
+  delay(2000); 
 }
