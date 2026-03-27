@@ -11,12 +11,12 @@ AsyncWebServer server(80);
 DNSServer dnsServer;
 
 // DANE TESTOWE 
-String soil = "450";     
+String soil = "600";     
 String water = "15";     
 String temp = "24.5";    
 String hum = "45.0";     
 String press = "1013.2"; 
-String pump = "OFF";     
+boolean pump = false;     
 
 void setup() {
   Serial.begin(115200);
@@ -47,7 +47,7 @@ void setup() {
     json += "\"temp\":" + temp + ",";
     json += "\"hum\":" + hum + ",";
     json += "\"press\":" + press + ",";
-    json += "\"pump\":\"" + pump + "\"";
+    json += "\"pump\":" + String(pump ? "true" : "false"); 
     json += "}";
     request->send(200, "application/json", json);
   });
@@ -55,6 +55,14 @@ void setup() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(LittleFS, "/index.html", "text/html");
   });
+
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+  request->send(LittleFS, "/style.css", "text/css");
+});
+
+server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
+  request->send(LittleFS, "/script.js", "text/javascript");
+});
 
   server.onNotFound([](AsyncWebServerRequest *request){
     request->redirect("/");

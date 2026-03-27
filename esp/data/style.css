@@ -1,0 +1,34 @@
+:root {
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --primary: #3498db;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+    --text: #2c3e50;
+}
+
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
+.container { width: 100%; max-width: 450px; padding: 20px; }
+
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+h1 { font-size: 24px; margin: 0; }
+
+.status-dot { width: 12px; height: 12px; background: #bdc3c7; border-radius: 50%; transition: 0.3s; }
+.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+.main-card { background: var(--card); border-radius: 25px; padding: 30px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.circular-chart { max-width: 180px; margin: 0 auto; }
+.circle-bg { fill: none; stroke: #eee; stroke-width: 2.8; }
+.circle { fill: none; stroke-width: 2.8; stroke-linecap: round; transition: stroke-dasharray 1s ease; stroke: var(--primary); }
+
+.percentage { font-size: 32px; font-weight: bold; margin-top: -110px; }
+.label { margin-top: 70px; font-size: 14px; color: #7f8c8d; }
+.description { margin-top: 15px; font-weight: bold; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.info-box { background: var(--card); padding: 15px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+.box-label { font-size: 11px; color: #7f8c8d; margin-top: 8px; text-transform: uppercase; }
+.box-value { font-size: 15px; font-weight: bold; margin-top: 4px; }
+
+#pump-card.active { background: #d5f5e3; color: #27ae60; }
+footer { text-align: center; font-size: 12px; color: #bdc3c7; margin-top: 20px; }

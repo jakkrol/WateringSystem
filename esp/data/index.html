@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Smart Garden Control</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>Hello word!</p>
+    <div class="container">
+        <header>
+            <h1>Smart Garden</h1>
+            <div id="connection-status" class="status-dot"></div>
+        </header>
+
+        <div class="main-card">
+            <div class="soil-circle">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="soil-progress" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="percentage" id="soil-val">--%</div>
+                <div class="label">Wilgotność gleby</div>
+            </div>
+            <div id="soil-desc" class="description">Czekam na dane...</div>
+        </div>
+
+        <div class="grid">
+            <div class="info-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                <span class="box-label">Woda (zbiornik)</span>
+                <span class="box-value" id="water-val">-- cm</span>
+            </div>
+            <div class="info-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2"><path d="M12 9V2m0 20v-7m9-5h-7M5 12H2m16.07-6.07l-4.93 4.93m-4.24 4.24l-4.93 4.93m14.1 0l-4.93-4.93M7.07 7.07l4.93 4.93"/></svg>
+                <span class="box-label">Temp. / Wilg.</span>
+                <span class="box-value" id="env-val">--°C / --%</span>
+            </div>
+            <div class="info-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#95a5a6" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <span class="box-label">Ciśnienie</span>
+                <span class="box-value" id="press-val">---- hPa</span>
+            </div>
+            <div class="info-box" id="pump-card">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5H5a2 2 0 0 1 0-4h16"/></svg>
+                <span class="box-label">Status Zaworu</span>
+                <span class="box-value" id="pump-val">ZAMKNIĘTY</span>
+            </div>
+        </div>
+
+        <footer>
+            Ostatnia aktualizacja: <span id="time">--:--:--</span>
+        </footer>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

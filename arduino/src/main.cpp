@@ -56,17 +56,16 @@ void loop() {
 
   // --- (MOSFET) ---
   if (sensorValue > DRY_THRESHOLD) {
-    // Is there water?
     if (distance > 0 && distance < WATER_MIN_DISTANCE) {
-      Serial.println(">>> Sucho i jest woda. Otwieram zawór.");
+      Serial.println(">>> Sucho i jest woda");
       digitalWrite(MOSFET_PIN, HIGH);
     } else {
-      Serial.println("!!! Sucho, ale BRAK WODY (zabezpieczenie pompy).");
+      Serial.println("!!! Sucho, ale brak wody");
       digitalWrite(MOSFET_PIN, LOW);
     }
   } 
   else if (sensorValue < WET_THRESHOLD) {
-    Serial.println("--- Wilgotno. Zamykam zawór.");
+    Serial.println("Wilgotno");
     digitalWrite(MOSFET_PIN, LOW);
   }
 
