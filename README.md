@@ -54,6 +54,4 @@ The system utilizes a serial communication bridge (UART) through a **Logic Level
 3.  **Flash ESP32:** Upload the server sketch to the ESP32.
 4.  **Connect:** * Search for Wi-Fi SSID: `System_Nawadniania_ESP`.
     * The Captive Portal should trigger automatically. If not, navigate to `192.168.4.1` in your browser.
-## 📝 Author
-* **Project Status:** Engineering Prototype (Embedded Systems Course)
-* **Development Date:** March 2026
+
