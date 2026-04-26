@@ -16,7 +16,7 @@ const int HCR_echo = 5;
 
 const int DRY_THRESHOLD = 700;  
 const int WET_THRESHOLD = 600;  
-const int WATER_MIN_DISTANCE = 20; 
+const int WATER_MIN_DISTANCE = 14; 
 
 void setup() {
   Serial.begin(115200);
