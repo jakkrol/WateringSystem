@@ -32,3 +32,46 @@ h1 { font-size: 24px; margin: 0; }
 
 #pump-card.active { background: #d5f5e3; color: #27ae60; }
 footer { text-align: center; font-size: 12px; color: #bdc3c7; margin-top: 20px; }
+
+
+.settings {
+    text-align: left;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.settings h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.setting-item {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.setting-item label {
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.setting-item input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+.setting-item input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+.setting-item span {
+    font-weight: bold;
+    color: var(--primary);
+}

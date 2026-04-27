@@ -4,95 +4,73 @@
 #include <LittleFS.h>
 #include <DNSServer.h>
 
-const char* ssid = "System_Nawadniania_ESP";
-const char* password = NULL; 
-
 AsyncWebServer server(80);
 DNSServer dnsServer;
 
-String soil = "0";      
-String water = "0";     
-String temp = "0";      
-String hum = "0";       
-String press = "0";     
-boolean pump = false;     
+String soil="0", water="0", temp="0", hum="0", press="0";
+String drySet="700", tankSet="20";
+boolean pump = false;
 
 void setup() {
   Serial.begin(115200);
-
+  // Conn with Arduino
   Serial2.begin(9600, SERIAL_8N1, 19, 18);
-
-  if (!LittleFS.begin()) {
-    Serial.println("Błąd montowania LittleFS!");
+  
+  if(!LittleFS.begin()){
+    Serial.println("Błąd LittleFS!");
   }
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAP(ssid);
-
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP uruchomiony. IP: ");
-  Serial.println(IP);
-
-  dnsServer.start(53, "*", IP);
+  WiFi.softAP("Smart_Garden_AP");
+  dnsServer.start(53, "*", WiFi.softAPIP());
 
   server.on("/api/data", HTTP_GET, [](AsyncWebServerRequest *request){
-    String json = "{";
-    json += "\"soil\":" + soil + ",";
-    json += "\"water\":" + water + ",";
-    json += "\"temp\":" + temp + ",";
-    json += "\"hum\":" + hum + ",";
-    json += "\"press\":" + press + ",";
-    json += "\"pump\":" + String(pump ? "true" : "false"); 
-    json += "}";
-    request->send(200, "application/json", json);
+    String j = "{";
+    j += "\"soil\":"+soil+",\"water\":"+water+",\"temp\":"+temp+",";
+    j += "\"hum\":"+hum+",\"press\":"+press+",\"pump\":"+(pump?"true":"false")+",";
+    j += "\"drySet\":"+drySet+",\"tankSet\":"+tankSet+"}";
+    request->send(200, "application/json", j);
   });
 
-  // Obsługa plików statycznych z pamięci Flash
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html");
+  server.on("/api/settings", HTTP_GET, [](AsyncWebServerRequest *request){
+    if(request->hasParam("dry")) Serial2.println("SET_DRY:"+request->getParam("dry")->value());
+    if(request->hasParam("tank")) Serial2.println("SET_TANK:"+request->getParam("tank")->value());
+    request->send(200, "text/plain", "OK");
   });
 
-  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/style.css", "text/css");
-  });
-
-  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/script.js", "text/javascript");
-  });
-
-  // Captive Portal - przekierowanie
-  server.onNotFound([](AsyncWebServerRequest *request){
-    request->redirect("/");
-  });
-
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+  server.onNotFound([](AsyncWebServerRequest *request){ request->redirect("/"); });
   server.begin();
-  Serial.println("Serwer WWW gotowy.");
+  Serial.println("Serwer ESP32 gotowy!");
 }
 
 void loop() {
   dnsServer.processNextRequest();
-
+  
   if (Serial2.available() > 0) {
-    String rawData = Serial2.readStringUntil('\n');
-    rawData.trim();
+    String data = Serial2.readStringUntil('\n');
+    data.trim();
+    
+    Serial.print("Surowe dane: ");
+    Serial.println(data);
 
-    int c1 = rawData.indexOf(',');
-    int c2 = rawData.indexOf(',', c1 + 1);
-    int c3 = rawData.indexOf(',', c2 + 1);
-    int c4 = rawData.indexOf(',', c3 + 1);
-    int c5 = rawData.indexOf(',', c4 + 1);
-
-    if (c5 != -1) {
-      soil = rawData.substring(0, c1);
-      water = rawData.substring(c1 + 1, c2);
-      temp = rawData.substring(c2 + 1, c3);
-      hum = rawData.substring(c3 + 1, c4);
-      press = rawData.substring(c4 + 1, c5);
-      //pump ma być boolean
-      pump = (rawData.substring(c5 + 1) == "1");
-
-      // Debug
-      Serial.println("Odebrano: " + rawData);
+    int c[7]; 
+    c[0] = data.indexOf(',');
+    for(int i=1; i<7; i++) c[i] = data.indexOf(',', c[i-1]+1);
+    
+    if(c[6] != -1) {
+      soil = data.substring(0, c[0]);
+      water = data.substring(c[0]+1, c[1]);
+      temp = data.substring(c[1]+1, c[2]);
+      hum = data.substring(c[2]+1, c[3]);
+      press = data.substring(c[3]+1, c[4]);
+      pump = (data.substring(c[4]+1, c[5]) == "1");
+      drySet = data.substring(c[5]+1, c[6]);
+      tankSet = data.substring(c[6]+1);
+      
+      Serial.println(">>> Dane zsynchronizowane pomyślnie.");
+    } else {
+      Serial.println("!!! Błąd formatu danych (zbyt mało przecinków)!");
     }
   }
 }

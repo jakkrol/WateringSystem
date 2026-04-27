@@ -7,5 +7,7 @@
 			"path": "esp"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "esp"
+	}
 }
