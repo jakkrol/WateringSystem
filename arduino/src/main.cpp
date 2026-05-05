@@ -11,6 +11,8 @@
 #define PIN_RX 8    
 #define PIN_TX 9    
 
+#define WaterDiodePin 6
+
 SoftwareSerial espSerial(PIN_RX, PIN_TX);
 Adafruit_BME280 bme;
 
@@ -26,10 +28,13 @@ void setup() {
   Serial.begin(115200); 
   espSerial.begin(9600);
   
+  pinMode(WaterDiodePin, OUTPUT);
+
   pinMode(PIN_PUMP, OUTPUT);
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
   digitalWrite(PIN_PUMP, LOW);
+  digitalWrite(WaterDiodePin, LOW);
 
   if (!bme.begin(0x76)) {
     Serial.println("BME280 error!");
@@ -86,6 +91,11 @@ void loop() {
     float p = bme.readPressure() / 100.0F;
 
     pumpState = (soilRaw > DRY_THRESHOLD && waterLevel > 2);
+    if (waterLevel <= 2) {
+      digitalWrite(WaterDiodePin, HIGH);
+    } else {
+      digitalWrite(WaterDiodePin, LOW);
+    }
     digitalWrite(PIN_PUMP, pumpState ? HIGH : LOW);
     Serial.print("Status Pompy: "); Serial.println(pumpState ? "ON" : "OFF");
 
